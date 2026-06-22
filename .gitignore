@@ -1,0 +1,29 @@
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Notebook/runtime files
+.ipynb_checkpoints/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Large generated model artifacts
+models/
+checkpoints/
+*.bin
+*.pt
+*.pth
+*.safetensors
+
+# Local logs
+*.log
