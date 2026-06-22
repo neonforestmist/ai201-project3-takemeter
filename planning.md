@@ -97,9 +97,39 @@ Initial hyperparameters to consider:
 
 | Hyperparameter | Starting Value | Reason |
 | --- | --- | --- |
-| Epochs | TODO | TODO |
-| Batch size | TODO | TODO |
-| Learning rate | TODO | TODO |
+| Epochs | 3 | Enough passes for the small 140-example training split without intentionally overtraining. |
+| Batch size | 16 train / 32 eval | Fits comfortably on the Colab T4 while keeping the run quick. |
+| Learning rate | `2e-5` | Standard conservative starting point for DistilBERT fine-tuning. |
+| Weight decay | `0.01` | Light regularization for a small labeled dataset. |
+| Warmup steps | 50 | Smooths the start of training for the short run. |
+
+Milestone 4 fine-tuning completed on 2026-06-22:
+
+- Loaded `distilbert-base-uncased` with a three-label sequence classification head.
+- Trained in Colab on a T4 GPU for 3 epochs using the starter notebook `Trainer` workflow.
+- Evaluated on the locked 30-example test split.
+- Saved the fine-tuned confusion matrix as `results/confusion_matrix.png`.
+- Saved the test metrics artifact as `results/milestone4_finetune_results.json`.
+
+Milestone 4 test result:
+
+| Metric | Value |
+| --- | ---: |
+| Accuracy | 0.400 |
+| Macro precision | 0.25 |
+| Macro recall | 0.36 |
+| Macro F1 | 0.29 |
+| Weighted F1 | 0.32 |
+
+Confusion matrix, rows=true label and columns=predicted label:
+
+| True \ Predicted | `actionable` | `underspecified` | `opinion_or_request` |
+| --- | ---: | ---: | ---: |
+| `actionable` | 9 | 0 | 3 |
+| `underspecified` | 6 | 0 | 3 |
+| `opinion_or_request` | 6 | 0 | 3 |
+
+Main error pattern: the fine-tuned model never predicted `underspecified`, so all nine underspecified test examples were forced into `actionable` or `opinion_or_request`. This suggests the class boundary between vague help requests and concrete developer posts needs either more examples, stronger text normalization, class weighting, or tuned training settings.
 
 ## 8. Evaluation Plan
 
@@ -119,10 +149,11 @@ Required metrics:
 | 2026-06-22 | Codex | Suggest OpenAI-related communities and label options, then fill Milestone 1. | Selected OpenAI Developer Community and drafted a 3-label taxonomy. | Accepted the community and labels; will revise after reading the first 30-40 examples if needed. |
 | 2026-06-22 | Codex | Build Milestone 2 dataset from public OpenAI Developer Community posts. | Generated collector script, 200-row labeled CSV, summary JSON, and documentation updates. | Spot-checked samples, refined rules, and kept the balanced label distribution. |
 | 2026-06-22 | Codex | Complete Milestone 3 in Colab. | Configured the label map and raw CSV path, ran validation/split/tokenization, and wrote a results artifact. | Verified the Colab outputs and stopped before training/baseline cells. |
+| 2026-06-22 | Codex | Complete Milestone 4 fine-tuning in Colab. | Reconnected the T4 runtime, trained DistilBERT for 3 epochs, ran test evaluation, generated the confusion matrix, and wrote a fine-tuning results artifact. | Accepted the run, documented the low `underspecified` recall, and left Groq baseline work for the next milestone. |
 
 ## 10. Open Questions
 
 - After reading the first 30-40 examples, do the labels cover at least 90% of posts without feeling forced?
 - Are `underspecified` and `opinion_or_request` easy enough to separate in short posts?
 - Which source categories on the OpenAI Developer Community produce the best balance across the three labels?
-- After fine-tuning, do the default DistilBERT hyperparameters need adjustment for the 200-example dataset?
+- Can class weighting, a longer run, or better examples help DistilBERT learn the `underspecified` boundary?

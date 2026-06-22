@@ -4,7 +4,7 @@ CodePath AI201 Project 3: a fine-tuned text classifier for evaluating discourse 
 
 ## Project Status
 
-Milestones 1-3 complete. Community choice, label taxonomy, dataset collection, Colab dataset validation, stratified split, and tokenization are done. Fine-tuning, baseline evaluation, final report, and demo are still in progress.
+Milestones 1-4 complete. Community choice, label taxonomy, dataset collection, Colab dataset validation, stratified split, tokenization, DistilBERT fine-tuning, test evaluation, and the fine-tuned confusion matrix are done. Groq baseline evaluation, final comparison/report polish, and demo are still in progress.
 
 ## Community Choice
 
@@ -78,7 +78,19 @@ Milestone 3 prepared the training data in Colab:
 
 The Milestone 3 validation artifact is [`results/milestone3_data_preparation.json`](results/milestone3_data_preparation.json).
 
-TODO: After training, describe the final training setup and at least one hyperparameter decision.
+Milestone 4 fine-tuned `distilbert-base-uncased` in Colab on a T4 GPU:
+
+- Epochs: 3
+- Train batch size: 16
+- Evaluation batch size: 32
+- Learning rate: `2e-5`
+- Weight decay: `0.01`
+- Warmup steps: 50
+- Best checkpoint selected by validation accuracy
+
+I kept the starter notebook's conservative DistilBERT settings because the dataset is small: 140 training examples, 30 validation examples, and 30 test examples. A `2e-5` learning rate and 3 epochs are reasonable first-pass hyperparameters for avoiding extreme overfitting while still letting the classifier move away from the base model.
+
+The Milestone 4 fine-tuning artifact is [`results/milestone4_finetune_results.json`](results/milestone4_finetune_results.json), and the fine-tuned confusion matrix is [`results/confusion_matrix.png`](results/confusion_matrix.png).
 
 ## Zero-Shot Baseline
 
@@ -104,32 +116,42 @@ TODO: Update the prompt if label definitions change after annotation, then expla
 
 ## Evaluation Report
 
-TODO: Report accuracy and per-class metrics for both the zero-shot baseline and fine-tuned model.
+Milestone 4 result: the fine-tuned DistilBERT classifier reached 0.400 accuracy on the 30-example test split. The model learned some signal for `actionable` and `opinion_or_request`, but it failed to predict `underspecified` at all on this run.
 
 ### Metrics
 
 | Model | Accuracy | Notes |
 | --- | ---: | --- |
 | Zero-shot baseline | TODO | TODO |
-| Fine-tuned classifier | TODO | TODO |
+| Fine-tuned DistilBERT | 0.400 | 12 correct / 30 test examples; never predicted `underspecified`. |
 
 ### Per-Class Metrics
 
 | Model | Label | Precision | Recall | F1 |
 | --- | --- | ---: | ---: | ---: |
-| TODO | TODO | TODO | TODO | TODO |
+| Fine-tuned DistilBERT | `actionable` | 0.43 | 0.75 | 0.55 |
+| Fine-tuned DistilBERT | `underspecified` | 0.00 | 0.00 | 0.00 |
+| Fine-tuned DistilBERT | `opinion_or_request` | 0.33 | 0.33 | 0.33 |
 
 ### Confusion Matrix
 
-TODO: Write the fine-tuned model confusion matrix as a markdown table here.
+Rows are true labels. Columns are predicted labels.
+
+| True \ Predicted | `actionable` | `underspecified` | `opinion_or_request` |
+| --- | ---: | ---: | ---: |
+| `actionable` | 9 | 0 | 3 |
+| `underspecified` | 6 | 0 | 3 |
+| `opinion_or_request` | 6 | 0 | 3 |
+
+![Fine-tuned confusion matrix](results/confusion_matrix.png)
 
 ### Wrong Predictions
 
 | Text | True Label | Predicted Label | Why It Failed |
 | --- | --- | --- | --- |
-| TODO | TODO | TODO | TODO |
-| TODO | TODO | TODO | TODO |
-| TODO | TODO | TODO | TODO |
+| "Livestream ... Sam Altman ... Really excited." | `actionable` | `opinion_or_request` | The short announcement-like text reads like community reaction even though the event details make it actionable. |
+| "Seems the prompt caching is broken..." | `underspecified` | `opinion_or_request` | It complains about a technical issue but lacks enough reproduction details; the model treated the complaint tone as the main signal. |
+| "I'm new to using AI for my small business..." | `opinion_or_request` | `actionable` | The post asks for practical direction, so the model over-weighted the help-seeking wording instead of the broad request style. |
 
 ### Sample Classifications
 
@@ -155,6 +177,7 @@ TODO: Describe one way the implementation diverged from the spec and why.
 | Milestone 1 planning | Suggest OpenAI-related communities and label options, then fill Milestone 1. | Selected OpenAI Developer Community and drafted the 3-label taxonomy. | Accepted the community and labels; will revise after reading the first 30-40 examples if needed. |
 | Milestone 2 data | Collect public forum examples and create a labeled dataset using the Milestone 1 taxonomy. | A reproducible collector script, 200-row CSV, balanced label distribution, and split metadata. | Refined the labeling rules after spot checks; filtered boilerplate and redacted common sensitive patterns. |
 | Milestone 3 preparation | Configure the Colab notebook for the project dataset and run the validation, split, and tokenization cells. | Label map, GitHub CSV path, validated data counts, stratified split, tokenizer output, and a JSON proof artifact. | Verified Colab outputs and kept fine-tuning/baseline cells for later milestones. |
+| Milestone 4 fine-tuning | Reconnect Colab, train DistilBERT, evaluate on the test split, and document the result. | A completed fine-tuning run, test metrics, confusion matrix, and repo artifacts. | Kept the first-pass run, documented the `underspecified` failure mode, and left Groq baseline comparison for the next milestone. |
 
 ## Repository Structure
 
@@ -166,7 +189,9 @@ TODO: Describe one way the implementation diverged from the spec and why.
 │   └── openai_developer_community_labeled.csv
 ├── notebooks/
 ├── results/
-│   └── milestone3_data_preparation.json
+│   ├── confusion_matrix.png
+│   ├── milestone3_data_preparation.json
+│   └── milestone4_finetune_results.json
 ├── scripts/
 │   └── collect_openai_forum_dataset.py
 └── src/
@@ -177,7 +202,7 @@ TODO: Describe one way the implementation diverged from the spec and why.
 Use the copied Colab notebook:
 https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5
 
-For Milestone 3 reproduction:
+For Milestones 3-4 reproduction:
 
 1. Open the copied Colab notebook and use a T4 GPU runtime.
 2. Confirm the Colab secret `GROQ_API_KEY` exists with notebook access enabled for later baseline cells.
@@ -185,5 +210,7 @@ For Milestone 3 reproduction:
 4. Use the `LABEL_MAP` shown above.
 5. Set `CSV_PATH` to the raw GitHub CSV URL.
 6. Run Sections 1-2 through tokenization.
+7. Run Section 3 to load and fine-tune `distilbert-base-uncased`.
+8. Run Section 4 to evaluate on the test set and save `confusion_matrix.png`.
 
-TODO: Add the training and evaluation steps after the fine-tuning and baseline runs are complete.
+TODO: Add the Groq baseline and final comparison steps after the baseline run is complete.
