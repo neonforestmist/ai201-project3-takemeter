@@ -1,0 +1,51 @@
+{
+  "milestone": 5,
+  "created_at": "2026-06-22",
+  "notebook_url": "https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5",
+  "community": "OpenAI Developer Community",
+  "dataset": {
+    "total_examples": 200,
+    "test_examples": 30,
+    "parseable_baseline_responses": 30,
+    "label_distribution": {
+      "actionable": 80,
+      "underspecified": 60,
+      "opinion_or_request": 60
+    },
+    "test_label_distribution": {
+      "actionable": 12,
+      "underspecified": 9,
+      "opinion_or_request": 9
+    },
+    "label_map": {
+      "actionable": 0,
+      "underspecified": 1,
+      "opinion_or_request": 2
+    }
+  },
+  "models": {
+    "zero_shot_baseline": {
+      "provider": "Groq",
+      "model": "llama-3.3-70b-versatile",
+      "accuracy": 0.4,
+      "macro_f1": 0.4,
+      "weighted_f1": 0.39
+    },
+    "fine_tuned": {
+      "base_model": "distilbert-base-uncased",
+      "accuracy": 0.4,
+      "macro_f1": 0.29,
+      "weighted_f1": 0.32
+    }
+  },
+  "comparison": {
+    "accuracy_delta_fine_tuned_minus_baseline": 0.0,
+    "winner_by_accuracy": "tie",
+    "main_observation": "Overall accuracy tied at 0.400. The Groq baseline was more balanced across classes, especially for underspecified posts, while the fine-tuned DistilBERT model strongly favored actionable and opinion_or_request predictions."
+  },
+  "artifacts": {
+    "baseline_results": "results/milestone5_baseline_results.json",
+    "fine_tuned_results": "results/milestone4_finetune_results.json",
+    "fine_tuned_confusion_matrix_png": "results/confusion_matrix.png"
+  }
+}

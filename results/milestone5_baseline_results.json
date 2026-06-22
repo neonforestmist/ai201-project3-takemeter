@@ -1,0 +1,74 @@
+{
+  "milestone": 5,
+  "created_at": "2026-06-22",
+  "notebook_url": "https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5",
+  "runtime": {
+    "environment": "Google Colab",
+    "accelerator": "Tesla T4"
+  },
+  "dataset": {
+    "source": "https://raw.githubusercontent.com/neonforestmist/ai201-project3-takemeter/main/data/openai_developer_community_labeled.csv",
+    "test_examples": 30,
+    "label_map": {
+      "actionable": 0,
+      "underspecified": 1,
+      "opinion_or_request": 2
+    }
+  },
+  "baseline": {
+    "provider": "Groq",
+    "model": "llama-3.3-70b-versatile",
+    "approach": "zero-shot/few-shot prompted classification",
+    "secret_handling": "GROQ_API_KEY was stored in Colab Secrets with notebook access enabled; no API key is stored in this repository.",
+    "prompt_contract": "Return exactly one label from actionable, underspecified, opinion_or_request.",
+    "parseable_responses": 30,
+    "unparseable_responses": 0
+  },
+  "test_metrics": {
+    "accuracy": 0.4,
+    "per_class": {
+      "actionable": {
+        "precision": 0.4,
+        "recall": 0.33,
+        "f1": 0.36,
+        "support": 12
+      },
+      "underspecified": {
+        "precision": 0.38,
+        "recall": 0.56,
+        "f1": 0.45,
+        "support": 9
+      },
+      "opinion_or_request": {
+        "precision": 0.43,
+        "recall": 0.33,
+        "f1": 0.38,
+        "support": 9
+      }
+    },
+    "accuracy_row": {
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4,
+      "support": 30
+    },
+    "macro_avg": {
+      "precision": 0.4,
+      "recall": 0.41,
+      "f1": 0.4,
+      "support": 30
+    },
+    "weighted_avg": {
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.39,
+      "support": 30
+    }
+  },
+  "comparison": {
+    "zero_shot_baseline_accuracy": 0.4,
+    "fine_tuned_distilbert_accuracy": 0.4,
+    "fine_tuning_delta": 0.0,
+    "summary": "The zero-shot Groq baseline and fine-tuned DistilBERT tied on overall accuracy. The baseline handled underspecified examples better, while the fine-tuned model had stronger recall on actionable examples."
+  }
+}

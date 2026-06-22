@@ -62,7 +62,9 @@ The final dataset is balanced: 80 `actionable`, 60 `underspecified`, and 60 `opi
 
 Baseline model: Groq `llama-3.3-70b-versatile`
 
-Prompt draft:
+Milestone 5 baseline completed on 2026-06-22 in the copied Colab notebook. The Groq API key was stored in Colab Secrets as `GROQ_API_KEY`; the key was not pasted into the notebook or committed to the repo.
+
+Final prompt:
 
 ```text
 You are classifying posts from the OpenAI Developer Community.
@@ -77,6 +79,25 @@ actionable
 underspecified
 opinion_or_request
 ```
+
+Baseline test result:
+
+| Metric | Value |
+| --- | ---: |
+| Accuracy | 0.400 |
+| Macro precision | 0.40 |
+| Macro recall | 0.41 |
+| Macro F1 | 0.40 |
+| Weighted F1 | 0.39 |
+| Parseable responses | 30 / 30 |
+
+Per-class result:
+
+| Label | Precision | Recall | F1 | Support |
+| --- | ---: | ---: | ---: | ---: |
+| `actionable` | 0.40 | 0.33 | 0.36 | 12 |
+| `underspecified` | 0.38 | 0.56 | 0.45 | 9 |
+| `opinion_or_request` | 0.43 | 0.33 | 0.38 | 9 |
 
 ## 7. Fine-Tuning Plan
 
@@ -141,6 +162,15 @@ Required metrics:
 - At least 3 wrong predictions with analysis
 - 3-5 sample classifications with confidence scores
 
+Milestone 5 comparison:
+
+| Model | Accuracy | Macro F1 | Weighted F1 | Main Note |
+| --- | ---: | ---: | ---: | --- |
+| Zero-shot Groq baseline | 0.400 | 0.40 | 0.39 | More balanced across classes; best `underspecified` recall. |
+| Fine-tuned DistilBERT | 0.400 | 0.29 | 0.32 | Better `actionable` recall; never predicted `underspecified`. |
+
+The exported notebook artifacts cover aggregate metrics, the fine-tuned confusion matrix, and the baseline/fine-tuned side-by-side comparison. Per-example confidence scores were not persisted during this run, so they should be added only if a final demo polish pass needs them.
+
 ## 9. AI Tool Plan and Usage Log
 
 | Date | Tool | Prompt / Direction | Output | What I Accepted or Changed |
@@ -150,10 +180,11 @@ Required metrics:
 | 2026-06-22 | Codex | Build Milestone 2 dataset from public OpenAI Developer Community posts. | Generated collector script, 200-row labeled CSV, summary JSON, and documentation updates. | Spot-checked samples, refined rules, and kept the balanced label distribution. |
 | 2026-06-22 | Codex | Complete Milestone 3 in Colab. | Configured the label map and raw CSV path, ran validation/split/tokenization, and wrote a results artifact. | Verified the Colab outputs and stopped before training/baseline cells. |
 | 2026-06-22 | Codex | Complete Milestone 4 fine-tuning in Colab. | Reconnected the T4 runtime, trained DistilBERT for 3 epochs, ran test evaluation, generated the confusion matrix, and wrote a fine-tuning results artifact. | Accepted the run, documented the low `underspecified` recall, and left Groq baseline work for the next milestone. |
+| 2026-06-22 | Codex | Complete Milestone 5 baseline and comparison. | Ran the Groq `llama-3.3-70b-versatile` baseline, compared it with DistilBERT, and updated results artifacts. | Accepted the tied accuracy result and documented that the baseline had better class balance. |
 
 ## 10. Open Questions
 
-- After reading the first 30-40 examples, do the labels cover at least 90% of posts without feeling forced?
-- Are `underspecified` and `opinion_or_request` easy enough to separate in short posts?
-- Which source categories on the OpenAI Developer Community produce the best balance across the three labels?
-- Can class weighting, a longer run, or better examples help DistilBERT learn the `underspecified` boundary?
+- The labels covered the dataset well enough for the 200-example first pass, but `underspecified` remains the hardest class for the fine-tuned model.
+- Short `underspecified` posts and broad `opinion_or_request` posts still need careful examples because both can lack technical details.
+- The next model iteration should test class weighting, more examples, or a longer/tuned run to help DistilBERT learn the `underspecified` boundary.
+- A final presentation pass should export 3-5 per-example classifications with confidence scores if the rubric requires visible confidence examples.

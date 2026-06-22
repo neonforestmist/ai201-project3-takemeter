@@ -4,7 +4,7 @@ CodePath AI201 Project 3: a fine-tuned text classifier for evaluating discourse 
 
 ## Project Status
 
-Milestones 1-4 complete. Community choice, label taxonomy, dataset collection, Colab dataset validation, stratified split, tokenization, DistilBERT fine-tuning, test evaluation, and the fine-tuned confusion matrix are done. Groq baseline evaluation, final comparison/report polish, and demo are still in progress.
+Milestones 1-5 complete. Community choice, label taxonomy, dataset collection, Colab dataset validation, stratified split, tokenization, DistilBERT fine-tuning, Groq zero-shot baseline evaluation, final comparison artifacts, and the fine-tuned confusion matrix are done. Demo polish is the main remaining project task.
 
 ## Community Choice
 
@@ -96,7 +96,7 @@ The Milestone 4 fine-tuning artifact is [`results/milestone4_finetune_results.js
 
 Baseline model: Groq `llama-3.3-70b-versatile`
 
-Draft baseline prompt:
+Final baseline prompt:
 
 ```text
 You are classifying posts from the OpenAI Developer Community.
@@ -112,26 +112,35 @@ underspecified
 opinion_or_request
 ```
 
-TODO: Update the prompt if label definitions change after annotation, then explain how baseline results were collected.
+I ran this prompt in the copied Colab notebook against the same 30-example test split used for the fine-tuned model. The Groq API key was stored as the Colab secret `GROQ_API_KEY` with notebook access enabled; no secret is stored in this repository.
+
+All 30 baseline responses were parseable as one of the three valid labels. The baseline results are saved in [`results/milestone5_baseline_results.json`](results/milestone5_baseline_results.json).
 
 ## Evaluation Report
 
-Milestone 4 result: the fine-tuned DistilBERT classifier reached 0.400 accuracy on the 30-example test split. The model learned some signal for `actionable` and `opinion_or_request`, but it failed to predict `underspecified` at all on this run.
+Milestone 5 compares the Groq zero-shot baseline with the fine-tuned DistilBERT classifier on the same 30-example test split. Both models reached 0.400 accuracy, but they made different kinds of mistakes.
 
 ### Metrics
 
 | Model | Accuracy | Notes |
 | --- | ---: | --- |
-| Zero-shot baseline | TODO | TODO |
+| Zero-shot Groq baseline | 0.400 | 12 correct / 30 test examples; all 30 responses were parseable. |
 | Fine-tuned DistilBERT | 0.400 | 12 correct / 30 test examples; never predicted `underspecified`. |
+
+Accuracy tied, so the fine-tuning run did not improve the headline score over the baseline. The baseline was more balanced across labels and recovered some `underspecified` examples, while the fine-tuned model learned a stronger `actionable` signal but collapsed away from the `underspecified` class.
 
 ### Per-Class Metrics
 
 | Model | Label | Precision | Recall | F1 |
 | --- | --- | ---: | ---: | ---: |
+| Zero-shot Groq baseline | `actionable` | 0.40 | 0.33 | 0.36 |
+| Zero-shot Groq baseline | `underspecified` | 0.38 | 0.56 | 0.45 |
+| Zero-shot Groq baseline | `opinion_or_request` | 0.43 | 0.33 | 0.38 |
 | Fine-tuned DistilBERT | `actionable` | 0.43 | 0.75 | 0.55 |
 | Fine-tuned DistilBERT | `underspecified` | 0.00 | 0.00 | 0.00 |
 | Fine-tuned DistilBERT | `opinion_or_request` | 0.33 | 0.33 | 0.33 |
+
+The baseline macro F1 was 0.40 and weighted F1 was 0.39. The fine-tuned model's macro F1 was 0.29 and weighted F1 was 0.32. Even though accuracy tied, the baseline had better class balance on this small test set.
 
 ### Confusion Matrix
 
@@ -155,19 +164,19 @@ Rows are true labels. Columns are predicted labels.
 
 ### Sample Classifications
 
-| Text | Predicted Label | Confidence | Notes |
-| --- | --- | ---: | --- |
-| TODO | TODO | TODO | TODO |
+The Milestone 5 notebook exported aggregate metrics and model comparison artifacts, but it did not persist per-example confidence scores. I am not inventing confidence values here; the wrong-prediction table above is the human-readable sample analysis for this milestone. A final polish pass should add a small exported table of examples with model confidence if the demo rubric requires it.
 
 ## Reflection
 
-TODO: Explain what the model seemed to learn compared with what the label taxonomy was intended to capture.
+The label taxonomy was meant to separate conversational function: concrete technical usefulness, vague help-seeking, and product opinion or feature request. The zero-shot baseline followed those definitions fairly evenly, especially for `underspecified`, because the prompt explicitly described missing context as the key signal.
+
+The fine-tuned DistilBERT model learned some useful surface cues for `actionable`, such as model names, technical terms, and implementation-like language. Its main failure was the `underspecified` boundary: on this run, it never predicted that class. That suggests the small training set did not give the model enough stable examples of vague technical help requests, or the wording overlap between `underspecified` and the other labels was too high for a first-pass DistilBERT run.
 
 ## Spec Reflection
 
-TODO: Describe one way the project spec helped guide the implementation.
+The project spec helped by forcing a clean baseline-versus-fine-tuned comparison on the same test split. Without that constraint, the 0.400 fine-tuned accuracy might look like the only result; with the baseline, it is clearer that the fine-tuned model did not beat a carefully prompted LLM and needs more data or training iteration.
 
-TODO: Describe one way the implementation diverged from the spec and why.
+One implementation detail I handled carefully was secret management. Instead of pasting the Groq API key into the notebook or repo, I used Colab Secrets with notebook access enabled. The tradeoff is that the repo documents the baseline results and artifacts, but it does not contain any runnable secret.
 
 ## AI Usage
 
@@ -178,6 +187,7 @@ TODO: Describe one way the implementation diverged from the spec and why.
 | Milestone 2 data | Collect public forum examples and create a labeled dataset using the Milestone 1 taxonomy. | A reproducible collector script, 200-row CSV, balanced label distribution, and split metadata. | Refined the labeling rules after spot checks; filtered boilerplate and redacted common sensitive patterns. |
 | Milestone 3 preparation | Configure the Colab notebook for the project dataset and run the validation, split, and tokenization cells. | Label map, GitHub CSV path, validated data counts, stratified split, tokenizer output, and a JSON proof artifact. | Verified Colab outputs and kept fine-tuning/baseline cells for later milestones. |
 | Milestone 4 fine-tuning | Reconnect Colab, train DistilBERT, evaluate on the test split, and document the result. | A completed fine-tuning run, test metrics, confusion matrix, and repo artifacts. | Kept the first-pass run, documented the `underspecified` failure mode, and left Groq baseline comparison for the next milestone. |
+| Milestone 5 baseline | Run the Groq zero-shot baseline, compare it with the fine-tuned model, and update the report artifacts. | Baseline metrics, side-by-side comparison, and final evaluation JSON files. | Documented the tie in accuracy and highlighted that the baseline had better class balance. |
 
 ## Repository Structure
 
@@ -190,8 +200,10 @@ TODO: Describe one way the implementation diverged from the spec and why.
 ├── notebooks/
 ├── results/
 │   ├── confusion_matrix.png
+│   ├── evaluation_results.json
 │   ├── milestone3_data_preparation.json
-│   └── milestone4_finetune_results.json
+│   ├── milestone4_finetune_results.json
+│   └── milestone5_baseline_results.json
 ├── scripts/
 │   └── collect_openai_forum_dataset.py
 └── src/
@@ -202,7 +214,7 @@ TODO: Describe one way the implementation diverged from the spec and why.
 Use the copied Colab notebook:
 https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5
 
-For Milestones 3-4 reproduction:
+For Milestones 3-5 reproduction:
 
 1. Open the copied Colab notebook and use a T4 GPU runtime.
 2. Confirm the Colab secret `GROQ_API_KEY` exists with notebook access enabled for later baseline cells.
@@ -212,5 +224,5 @@ For Milestones 3-4 reproduction:
 6. Run Sections 1-2 through tokenization.
 7. Run Section 3 to load and fine-tune `distilbert-base-uncased`.
 8. Run Section 4 to evaluate on the test set and save `confusion_matrix.png`.
-
-TODO: Add the Groq baseline and final comparison steps after the baseline run is complete.
+9. Run the Groq baseline section with `llama-3.3-70b-versatile`.
+10. Run the comparison/export section to generate `evaluation_results.json` and the final side-by-side metrics.
