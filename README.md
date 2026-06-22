@@ -24,33 +24,43 @@ The classifier uses three mutually exclusive labels. The examples below are illu
 
 ## Data Collection
 
-Examples will come from public [OpenAI Developer Community](https://community.openai.com/) forum posts and replies.
+Examples come from public [OpenAI Developer Community](https://community.openai.com/) forum posts and replies. The labeled dataset is in [`data/openai_developer_community_labeled.csv`](data/openai_developer_community_labeled.csv).
 
-The dataset will include posts about API usage, model behavior, SDKs, tooling, developer workflows, errors, usage limits, pricing, and product feedback. I will exclude private account information, copied API keys or secrets, screenshots/images without enough text to label, official documentation pages, staff announcements without community discussion, duplicate moderation boilerplate, and consumer-only ChatGPT questions that are not about developer tools or API usage.
+The dataset includes posts about API usage, model behavior, SDKs, tooling, developer workflows, errors, usage limits, pricing, and product feedback. I excluded private account information, copied API keys or secrets, screenshots/images without enough text to label, official documentation pages, category boilerplate, duplicate moderation boilerplate, and consumer-only ChatGPT questions that are not about developer tools or API usage.
 
-TODO: Add the final labeled dataset to `data/` as CSV or JSON.
+Collection was done with [`scripts/collect_openai_forum_dataset.py`](scripts/collect_openai_forum_dataset.py), which uses public Discourse JSON pages, strips HTML, redacts common email/API-key/ID patterns, caps repeated examples from long topics, and creates a balanced 200-row dataset.
 
 ## Labeling Process
 
-Each example will be labeled by reading the text and identifying its main role in the developer conversation: actionable technical contribution, underspecified help request/problem report, or opinion/product request.
+Each example was labeled by identifying its main role in the developer conversation: actionable technical contribution, underspecified help request/problem report, or opinion/product request.
 
-For mixed posts, I will prefer `actionable` if the concrete details are central to the post. Short replies will be labeled by purpose: a short reply with a model name or exact error can still be `actionable`, while "same here" is `underspecified` and broad reactions are `opinion_or_request`.
+I used a rubric-assisted labeling script, then spot-checked samples and refined the rules. The main refinements were: category boilerplate was filtered out; screenshots, IDs, code-like text, and exact errors counted as actionable context; conceptual "trying to understand" questions without implementation detail counted as `underspecified`; broad workflow preferences and feature requests counted as `opinion_or_request`.
+
+For mixed posts, I prefer `actionable` if the concrete details are central to the post. Short replies are labeled by purpose: a short reply with a model name or exact error can still be `actionable`, while "same here" is `underspecified` and broad reactions are `opinion_or_request`.
 
 ### Label Distribution
 
 | Label | Count | Percent |
 | --- | ---: | ---: |
-| `actionable` | TODO | TODO |
-| `underspecified` | TODO | TODO |
-| `opinion_or_request` | TODO | TODO |
+| `actionable` | 80 | 40% |
+| `underspecified` | 60 | 30% |
+| `opinion_or_request` | 60 | 30% |
+
+### Dataset Split
+
+| Split | Count | Percent |
+| --- | ---: | ---: |
+| Train | 140 | 70% |
+| Validation | 30 | 15% |
+| Test | 30 | 15% |
 
 ### Difficult Examples
 
 | Text | Final Label | Why It Was Difficult | Decision Rule |
 | --- | --- | --- | --- |
-| TODO | TODO | TODO | TODO |
-| TODO | TODO | TODO | TODO |
-| TODO | TODO | TODO | TODO |
+| `odc_0019`: asks about `gpt-oss-20b` returning reasoning instead of one-line JSON | `actionable` | It is phrased as a help request, but it gives a model, expected output, observed behavior, and failure pattern. | Concrete technical details beat the fact that it asks for help. |
+| `odc_0069`: asks whether Codex Ask helps with game-logic bugs | `underspecified` | It mentions a real workflow, but there is no code, exact bug, error, or reproduction path. | A broad applicability question without technical context is underspecified. |
+| `odc_0151`: describes using one model for planning and Codex for execution | `opinion_or_request` | It references an actual workflow, but the main point is personal preference and tool comparison. | Workflow opinions without reproducible details stay `opinion_or_request`. |
 
 ## Fine-Tuning Approach
 
@@ -133,6 +143,7 @@ TODO: Describe one way the implementation diverged from the spec and why.
 | --- | --- | --- | --- |
 | Project setup | Scaffold the repository and documentation sections from the CodePath checklist. | Initial README, planning file, folders, and git setup. | Accepted the scaffold and kept TODOs for data/model results. |
 | Milestone 1 planning | Suggest OpenAI-related communities and label options, then fill Milestone 1. | Selected OpenAI Developer Community and drafted the 3-label taxonomy. | Accepted the community and labels; will revise after reading the first 30-40 examples if needed. |
+| Milestone 2 data | Collect public forum examples and create a labeled dataset using the Milestone 1 taxonomy. | A reproducible collector script, 200-row CSV, balanced label distribution, and split metadata. | Refined the labeling rules after spot checks; filtered boilerplate and redacted common sensitive patterns. |
 
 ## Repository Structure
 
@@ -141,8 +152,11 @@ TODO: Describe one way the implementation diverged from the spec and why.
 ├── README.md
 ├── planning.md
 ├── data/
+│   └── openai_developer_community_labeled.csv
 ├── notebooks/
 ├── results/
+├── scripts/
+│   └── collect_openai_forum_dataset.py
 └── src/
 ```
 

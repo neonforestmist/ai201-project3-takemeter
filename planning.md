@@ -38,7 +38,7 @@ Goal: Define 2-4 labels that are mutually exclusive, useful to the community, an
 
 Source: OpenAI Developer Community public forum pages: https://community.openai.com/
 
-Collection method: Collect at least 200 text examples from public posts/replies. Save only the text needed for the classification task plus non-sensitive source metadata. Remove API keys, email addresses, account IDs, and other private details if they appear in copied text.
+Collection method: Collected 200 text examples from public posts/replies using `scripts/collect_openai_forum_dataset.py`. The script uses public Discourse JSON pages, strips HTML, redacts common email/API-key/ID patterns, filters category boilerplate, limits repeated examples from long topics, and writes a labeled CSV to `data/openai_developer_community_labeled.csv`.
 
 Target count: at least 200 labeled examples.
 
@@ -52,9 +52,11 @@ Split plan:
 
 ## 5. Annotation Process
 
-Each example will be labeled by reading the full text and asking: "What role is this post playing in the developer conversation?" The first pass will use the three labels above. After 30-40 examples, I will review disagreements and confusing cases, then tighten the edge-case rules before labeling the remaining examples.
+Each example was labeled by reading the full text and asking: "What role is this post playing in the developer conversation?" I used a rubric-assisted script for the first pass, then spot-checked samples and refined the rules before regenerating the final CSV.
 
-During annotation, I will track difficult examples in the README and note why the final label was chosen. I will aim for at least 20% of examples in each label so the model does not learn a majority-class shortcut.
+After reviewing the first batches, the labels still covered the data well, but several edge-case rules needed tightening: category boilerplate was removed; screenshots, IDs, code-like text, and exact errors count as actionable context; conceptual "trying to understand" questions without implementation details are `underspecified`; broad workflow preferences and feature requests are `opinion_or_request`.
+
+The final dataset is balanced: 80 `actionable`, 60 `underspecified`, and 60 `opinion_or_request`. Splits are stratified into 140 train, 30 validation, and 30 test examples.
 
 ## 6. Baseline Plan
 
@@ -106,6 +108,7 @@ Required metrics:
 | --- | --- | --- | --- | --- |
 | 2026-06-22 | Codex | Set up the repository files from the CodePath Project 3 checklist. | Initial project scaffold. | Accepted the scaffold and kept TODOs for data/model results. |
 | 2026-06-22 | Codex | Suggest OpenAI-related communities and label options, then fill Milestone 1. | Selected OpenAI Developer Community and drafted a 3-label taxonomy. | Accepted the community and labels; will revise after reading the first 30-40 examples if needed. |
+| 2026-06-22 | Codex | Build Milestone 2 dataset from public OpenAI Developer Community posts. | Generated collector script, 200-row labeled CSV, summary JSON, and documentation updates. | Spot-checked samples, refined rules, and kept the balanced label distribution. |
 
 ## 10. Open Questions
 

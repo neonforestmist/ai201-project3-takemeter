@@ -1,0 +1,26 @@
+{
+  "source": "https://community.openai.com",
+  "total_examples": 200,
+  "label_distribution": {
+    "actionable": 80,
+    "underspecified": 60,
+    "opinion_or_request": 60
+  },
+  "split_distribution": {
+    "train": 140,
+    "test": 30,
+    "validation": 30
+  },
+  "category_distribution": {
+    "API": 21,
+    "Community": 45,
+    "Codex": 35,
+    "Documentation": 20,
+    "ChatGPT Apps SDK": 25,
+    "Prompting": 30,
+    "Open Models": 4,
+    "ChatGPT developer tools": 20
+  },
+  "random_seed": 42,
+  "output": "data/openai_developer_community_labeled.csv"
+}
