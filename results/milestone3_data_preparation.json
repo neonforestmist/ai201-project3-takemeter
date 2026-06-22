@@ -1,0 +1,73 @@
+{
+  "milestone": 3,
+  "completed_on": "2026-06-22",
+  "notebook_url": "https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5",
+  "runtime": {
+    "environment": "Google Colab",
+    "accelerator": "Tesla T4",
+    "torch_version": "2.11.0+cu128"
+  },
+  "label_map": {
+    "actionable": 0,
+    "underspecified": 1,
+    "opinion_or_request": 2
+  },
+  "dataset": {
+    "csv_path": "https://raw.githubusercontent.com/neonforestmist/ai201-project3-takemeter/main/data/openai_developer_community_labeled.csv",
+    "columns": [
+      "id",
+      "text",
+      "label",
+      "split",
+      "source_url",
+      "topic_id",
+      "post_id",
+      "post_number",
+      "category",
+      "topic_title",
+      "annotation_note"
+    ],
+    "total_examples": 200,
+    "label_distribution": {
+      "actionable": 80,
+      "underspecified": 60,
+      "opinion_or_request": 60
+    },
+    "validation_status": "All labels match LABEL_MAP"
+  },
+  "split": {
+    "method": "Stratified train_test_split, random_state=42, 70/15/15",
+    "counts": {
+      "train": 140,
+      "validation": 30,
+      "test": 30
+    },
+    "train_label_distribution": {
+      "actionable": 56,
+      "underspecified": 42,
+      "opinion_or_request": 42
+    },
+    "validation_label_distribution": {
+      "actionable": 12,
+      "underspecified": 9,
+      "opinion_or_request": 9
+    },
+    "test_label_distribution": {
+      "actionable": 12,
+      "underspecified": 9,
+      "opinion_or_request": 9
+    }
+  },
+  "tokenization": {
+    "model_name": "distilbert-base-uncased",
+    "max_length": 256,
+    "status": "Completed in Colab",
+    "sample_keys": [
+      "text",
+      "labels",
+      "input_ids",
+      "token_type_ids",
+      "attention_mask"
+    ]
+  }
+}

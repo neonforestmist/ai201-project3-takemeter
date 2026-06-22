@@ -84,6 +84,15 @@ Base model: `distilbert-base-uncased`
 
 Training environment: Google Colab T4 GPU
 
+Milestone 3 preparation completed on 2026-06-22:
+
+- Added `LABEL_MAP = {"actionable": 0, "underspecified": 1, "opinion_or_request": 2}` to the copied Colab notebook.
+- Loaded the dataset from the raw GitHub CSV URL.
+- Validated 200 examples and confirmed all labels match the label map.
+- Created a stratified 70/15/15 split: 140 train, 30 validation, 30 test.
+- Tokenized all splits with `distilbert-base-uncased` at `max_length=256`.
+- Saved the proof artifact in `results/milestone3_data_preparation.json`.
+
 Initial hyperparameters to consider:
 
 | Hyperparameter | Starting Value | Reason |
@@ -109,9 +118,11 @@ Required metrics:
 | 2026-06-22 | Codex | Set up the repository files from the CodePath Project 3 checklist. | Initial project scaffold. | Accepted the scaffold and kept TODOs for data/model results. |
 | 2026-06-22 | Codex | Suggest OpenAI-related communities and label options, then fill Milestone 1. | Selected OpenAI Developer Community and drafted a 3-label taxonomy. | Accepted the community and labels; will revise after reading the first 30-40 examples if needed. |
 | 2026-06-22 | Codex | Build Milestone 2 dataset from public OpenAI Developer Community posts. | Generated collector script, 200-row labeled CSV, summary JSON, and documentation updates. | Spot-checked samples, refined rules, and kept the balanced label distribution. |
+| 2026-06-22 | Codex | Complete Milestone 3 in Colab. | Configured the label map and raw CSV path, ran validation/split/tokenization, and wrote a results artifact. | Verified the Colab outputs and stopped before training/baseline cells. |
 
 ## 10. Open Questions
 
 - After reading the first 30-40 examples, do the labels cover at least 90% of posts without feeling forced?
 - Are `underspecified` and `opinion_or_request` easy enough to separate in short posts?
 - Which source categories on the OpenAI Developer Community produce the best balance across the three labels?
+- After fine-tuning, do the default DistilBERT hyperparameters need adjustment for the 200-example dataset?

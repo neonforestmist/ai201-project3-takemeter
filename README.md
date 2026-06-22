@@ -4,7 +4,7 @@ CodePath AI201 Project 3: a fine-tuned text classifier for evaluating discourse 
 
 ## Project Status
 
-Milestone 1 complete. Community choice and label taxonomy are defined. Dataset collection, model results, evaluation, and demo are still in progress.
+Milestones 1-3 complete. Community choice, label taxonomy, dataset collection, Colab dataset validation, stratified split, and tokenization are done. Fine-tuning, baseline evaluation, final report, and demo are still in progress.
 
 ## Community Choice
 
@@ -68,7 +68,17 @@ Base model: `distilbert-base-uncased`
 
 Copied Colab notebook: https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5
 
-TODO: Describe the training setup, dataset split, and at least one hyperparameter decision.
+Milestone 3 prepared the training data in Colab:
+
+- Label map: `actionable -> 0`, `underspecified -> 1`, `opinion_or_request -> 2`
+- Dataset source: raw GitHub CSV at `data/openai_developer_community_labeled.csv`
+- Validation: 200 examples loaded; all labels matched `LABEL_MAP`
+- Split: 140 train, 30 validation, 30 test with stratification by `label_id`
+- Tokenizer: `distilbert-base-uncased`, `max_length=256`
+
+The Milestone 3 validation artifact is [`results/milestone3_data_preparation.json`](results/milestone3_data_preparation.json).
+
+TODO: After training, describe the final training setup and at least one hyperparameter decision.
 
 ## Zero-Shot Baseline
 
@@ -144,6 +154,7 @@ TODO: Describe one way the implementation diverged from the spec and why.
 | Project setup | Scaffold the repository and documentation sections from the CodePath checklist. | Initial README, planning file, folders, and git setup. | Accepted the scaffold and kept TODOs for data/model results. |
 | Milestone 1 planning | Suggest OpenAI-related communities and label options, then fill Milestone 1. | Selected OpenAI Developer Community and drafted the 3-label taxonomy. | Accepted the community and labels; will revise after reading the first 30-40 examples if needed. |
 | Milestone 2 data | Collect public forum examples and create a labeled dataset using the Milestone 1 taxonomy. | A reproducible collector script, 200-row CSV, balanced label distribution, and split metadata. | Refined the labeling rules after spot checks; filtered boilerplate and redacted common sensitive patterns. |
+| Milestone 3 preparation | Configure the Colab notebook for the project dataset and run the validation, split, and tokenization cells. | Label map, GitHub CSV path, validated data counts, stratified split, tokenizer output, and a JSON proof artifact. | Verified Colab outputs and kept fine-tuning/baseline cells for later milestones. |
 
 ## Repository Structure
 
@@ -155,6 +166,7 @@ TODO: Describe one way the implementation diverged from the spec and why.
 │   └── openai_developer_community_labeled.csv
 ├── notebooks/
 ├── results/
+│   └── milestone3_data_preparation.json
 ├── scripts/
 │   └── collect_openai_forum_dataset.py
 └── src/
@@ -165,4 +177,13 @@ TODO: Describe one way the implementation diverged from the spec and why.
 Use the copied Colab notebook:
 https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5
 
-TODO: Describe the steps needed to reproduce training and evaluation after the dataset and labels are finalized.
+For Milestone 3 reproduction:
+
+1. Open the copied Colab notebook and use a T4 GPU runtime.
+2. Confirm the Colab secret `GROQ_API_KEY` exists with notebook access enabled for later baseline cells.
+3. Run the setup/import cells.
+4. Use the `LABEL_MAP` shown above.
+5. Set `CSV_PATH` to the raw GitHub CSV URL.
+6. Run Sections 1-2 through tokenization.
+
+TODO: Add the training and evaluation steps after the fine-tuning and baseline runs are complete.
