@@ -169,7 +169,19 @@ Milestone 5 comparison:
 | Zero-shot Groq baseline | 0.400 | 0.40 | 0.39 | More balanced across classes; best `underspecified` recall. |
 | Fine-tuned DistilBERT | 0.400 | 0.29 | 0.32 | Better `actionable` recall; never predicted `underspecified`. |
 
-The exported notebook artifacts cover aggregate metrics, the fine-tuned confusion matrix, and the baseline/fine-tuned side-by-side comparison. Per-example confidence scores were not persisted during this run, so they should be added only if a final demo polish pass needs them.
+The exported notebook artifacts cover aggregate metrics, the fine-tuned confusion matrix, and the baseline/fine-tuned side-by-side comparison.
+
+Milestone 6 sample-confidence export:
+
+| ID | True Label | Predicted Label | Confidence | Correct? |
+| --- | --- | --- | ---: | --- |
+| `odc_0021` | `actionable` | `actionable` | 0.358 | yes |
+| `odc_0053` | `underspecified` | `actionable` | 0.364 | no |
+| `odc_0084` | `actionable` | `actionable` | 0.356 | yes |
+| `odc_0111` | `opinion_or_request` | `actionable` | 0.370 | no |
+| `odc_0129` | `actionable` | `actionable` | 0.364 | yes |
+
+These examples were generated with `scripts/export_milestone6_samples.py`, which reruns the committed split with the same DistilBERT hyperparameters because the original Colab checkpoint was not committed.
 
 ## 9. AI Tool Plan and Usage Log
 
@@ -181,10 +193,11 @@ The exported notebook artifacts cover aggregate metrics, the fine-tuned confusio
 | 2026-06-22 | Codex | Complete Milestone 3 in Colab. | Configured the label map and raw CSV path, ran validation/split/tokenization, and wrote a results artifact. | Verified the Colab outputs and stopped before training/baseline cells. |
 | 2026-06-22 | Codex | Complete Milestone 4 fine-tuning in Colab. | Reconnected the T4 runtime, trained DistilBERT for 3 epochs, ran test evaluation, generated the confusion matrix, and wrote a fine-tuning results artifact. | Accepted the run, documented the low `underspecified` recall, and left Groq baseline work for the next milestone. |
 | 2026-06-22 | Codex | Complete Milestone 5 baseline and comparison. | Ran the Groq `llama-3.3-70b-versatile` baseline, compared it with DistilBERT, and updated results artifacts. | Accepted the tied accuracy result and documented that the baseline had better class balance. |
+| 2026-06-22 | Codex | Complete Milestone 6 final report and demo prep. | Added a sample-confidence export script, generated five sample classifications, polished the README, and drafted a demo script. | Kept the Colab metrics as the official evaluation and used the local rerun only for demo confidence samples. |
 
 ## 10. Open Questions
 
 - The labels covered the dataset well enough for the 200-example first pass, but `underspecified` remains the hardest class for the fine-tuned model.
 - Short `underspecified` posts and broad `opinion_or_request` posts still need careful examples because both can lack technical details.
 - The next model iteration should test class weighting, more examples, or a longer/tuned run to help DistilBERT learn the `underspecified` boundary.
-- A final presentation pass should export 3-5 per-example classifications with confidence scores if the rubric requires visible confidence examples.
+- The repo-side Milestone 6 work is complete; the remaining external step is recording and uploading the demo video through the Course Portal.

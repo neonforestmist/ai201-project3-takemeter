@@ -4,7 +4,7 @@ CodePath AI201 Project 3: a fine-tuned text classifier for evaluating discourse 
 
 ## Project Status
 
-Milestones 1-5 complete. Community choice, label taxonomy, dataset collection, Colab dataset validation, stratified split, tokenization, DistilBERT fine-tuning, Groq zero-shot baseline evaluation, final comparison artifacts, and the fine-tuned confusion matrix are done. Demo polish is the main remaining project task.
+Milestones 1-6 repo deliverables are complete. Community choice, label taxonomy, dataset collection, Colab dataset validation, stratified split, tokenization, DistilBERT fine-tuning, Groq zero-shot baseline evaluation, final comparison artifacts, sample classifications with confidence, and demo recording notes are done. The remaining external step is recording/uploading the 3-5 minute demo video in the Course Portal.
 
 ## Community Choice
 
@@ -164,7 +164,17 @@ Rows are true labels. Columns are predicted labels.
 
 ### Sample Classifications
 
-The Milestone 5 notebook exported aggregate metrics and model comparison artifacts, but it did not persist per-example confidence scores. I am not inventing confidence values here; the wrong-prediction table above is the human-readable sample analysis for this milestone. A final polish pass should add a small exported table of examples with model confidence if the demo rubric requires it.
+For Milestone 6, I exported five test-set examples with fine-tuned DistilBERT labels and softmax confidence scores using [`scripts/export_milestone6_samples.py`](scripts/export_milestone6_samples.py). Because the original Colab model checkpoint was not committed, this script reruns the same committed train/validation/test split and DistilBERT hyperparameters to produce the demo confidence table. The aggregate comparison above remains the official Colab evaluation result.
+
+| ID | Short Text | True Label | Predicted Label | Confidence | Result / Notes |
+| --- | --- | --- | --- | ---: | --- |
+| `odc_0021` | "As per the MCP specification for tool discovery and pagination..." | `actionable` | `actionable` | 0.358 | Correct. The post names a specific MCP pagination behavior, expected spec behavior, and observed failure. |
+| `odc_0053` | "In the blog post for gpt-realtime there are primitive examples..." | `underspecified` | `actionable` | 0.364 | Incorrect. Documentation links and dates look concrete, but the label treats the post as missing enough implementation context. |
+| `odc_0084` | "From idea to working product in a few weeks. I built an AI-native email layer..." | `actionable` | `actionable` | 0.356 | Correct. The post gives concrete product behavior, constraints, and feedback targets. |
+| `odc_0111` | "I've been experimenting with multi-step AI prompting techniques..." | `opinion_or_request` | `actionable` | 0.370 | Incorrect. The model over-weighted structured technical wording even though the post is mainly a broad method proposal. |
+| `odc_0129` | "The Future of Email Should Belong to OpenAI. Here's the blueprint..." | `actionable` | `actionable` | 0.364 | Correct under this project's rubric because the post gives a concrete product blueprint, not only a preference. |
+
+The confidence scores are all low, which matches the broader evaluation: the model is not strongly calibrated and is often uncertain even when it predicts the right label.
 
 ## Reflection
 
@@ -188,11 +198,17 @@ One implementation detail I handled carefully was secret management. Instead of 
 | Milestone 3 preparation | Configure the Colab notebook for the project dataset and run the validation, split, and tokenization cells. | Label map, GitHub CSV path, validated data counts, stratified split, tokenizer output, and a JSON proof artifact. | Verified Colab outputs and kept fine-tuning/baseline cells for later milestones. |
 | Milestone 4 fine-tuning | Reconnect Colab, train DistilBERT, evaluate on the test split, and document the result. | A completed fine-tuning run, test metrics, confusion matrix, and repo artifacts. | Kept the first-pass run, documented the `underspecified` failure mode, and left Groq baseline comparison for the next milestone. |
 | Milestone 5 baseline | Run the Groq zero-shot baseline, compare it with the fine-tuned model, and update the report artifacts. | Baseline metrics, side-by-side comparison, and final evaluation JSON files. | Documented the tie in accuracy and highlighted that the baseline had better class balance. |
+| Milestone 6 final report | Surface final error patterns, add sample classifications with confidence, and prepare demo materials. | A sample-confidence export script, Milestone 6 JSON artifact, final README polish, and a demo script. | Kept the original Colab metrics as the official comparison and used the rerun only for sample confidence examples. |
+
+## Demo Video
+
+The required 3-5 minute demo video should show 3-5 classifications with label and confidence, one correct prediction, one incorrect prediction, and a brief walkthrough of the evaluation report. I prepared [`demo_script.md`](demo_script.md) with the exact flow and narration points to use while recording.
 
 ## Repository Structure
 
 ```text
 .
+├── demo_script.md
 ├── README.md
 ├── planning.md
 ├── data/
@@ -203,9 +219,11 @@ One implementation detail I handled carefully was secret management. Instead of 
 │   ├── evaluation_results.json
 │   ├── milestone3_data_preparation.json
 │   ├── milestone4_finetune_results.json
-│   └── milestone5_baseline_results.json
+│   ├── milestone5_baseline_results.json
+│   └── milestone6_sample_classifications.json
 ├── scripts/
-│   └── collect_openai_forum_dataset.py
+│   ├── collect_openai_forum_dataset.py
+│   └── export_milestone6_samples.py
 └── src/
 ```
 
@@ -226,3 +244,11 @@ For Milestones 3-5 reproduction:
 8. Run Section 4 to evaluate on the test set and save `confusion_matrix.png`.
 9. Run the Groq baseline section with `llama-3.3-70b-versatile`.
 10. Run the comparison/export section to generate `evaluation_results.json` and the final side-by-side metrics.
+
+For the Milestone 6 sample-confidence table, run this local utility from the repo root:
+
+```bash
+python3 scripts/export_milestone6_samples.py
+```
+
+It recreates the committed split, fine-tunes `distilbert-base-uncased` with the same small-run hyperparameters, and writes [`results/milestone6_sample_classifications.json`](results/milestone6_sample_classifications.json).
