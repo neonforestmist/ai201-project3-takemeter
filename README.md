@@ -53,6 +53,8 @@ TODO: Document edge cases and hard calls.
 
 Base model: `distilbert-base-uncased`
 
+Copied Colab notebook: https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5
+
 TODO: Describe the training setup, dataset split, and at least one hyperparameter decision.
 
 ## Zero-Shot Baseline
@@ -127,4 +129,7 @@ TODO: Describe one way the implementation diverged from the spec and why.
 
 ## How to Run
 
-TODO: Link your copied Colab notebook and describe the steps needed to reproduce training and evaluation.
+Use the copied Colab notebook:
+https://colab.research.google.com/drive/15G3bG4fVFzDTiwTDjYdOUVYpOihvv3i5
+
+TODO: Describe the steps needed to reproduce training and evaluation after the dataset and labels are finalized.
