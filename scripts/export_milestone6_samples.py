@@ -142,6 +142,80 @@ def build_samples(rows: list[dict[str, str]], predictions: list[int], confidence
     return selected[:5]
 
 
+def summarize_prediction(row: dict[str, str], prediction: int, confidence: float) -> dict[str, object]:
+    predicted_label = ID_TO_LABEL[prediction]
+    return {
+        "id": row["id"],
+        "true_label": row["label"],
+        "predicted_label": predicted_label,
+        "confidence": round(float(confidence), 4),
+        "correct": row["label"] == predicted_label,
+    }
+
+
+def summarize_group(name: str, items: list[dict[str, object]]) -> dict[str, object]:
+    if not items:
+        return {
+            "name": name,
+            "count": 0,
+            "avg_confidence": None,
+            "accuracy": None,
+            "correct": 0,
+        }
+    correct = sum(1 for item in items if item["correct"])
+    avg_confidence = sum(float(item["confidence"]) for item in items) / len(items)
+    return {
+        "name": name,
+        "count": len(items),
+        "avg_confidence": round(avg_confidence, 4),
+        "accuracy": round(correct / len(items), 4),
+        "correct": correct,
+    }
+
+
+def build_calibration(prediction_rows: list[dict[str, object]]) -> dict[str, object]:
+    fixed_bins = [
+        ("0.00-0.40", 0.0, 0.4),
+        ("0.40-0.60", 0.4, 0.6),
+        ("0.60-0.80", 0.6, 0.8),
+        ("0.80-1.00", 0.8, 1.01),
+    ]
+    fixed_summaries = []
+    for name, lower, upper in fixed_bins:
+        items = [row for row in prediction_rows if lower <= float(row["confidence"]) < upper]
+        fixed_summaries.append(summarize_group(name, items))
+
+    sorted_rows = sorted(prediction_rows, key=lambda row: float(row["confidence"]))
+    quantile_summaries = []
+    bucket_size = max(len(sorted_rows) // 3, 1)
+    quantile_specs = [
+        ("lowest confidence third", sorted_rows[:bucket_size]),
+        ("middle confidence third", sorted_rows[bucket_size : bucket_size * 2]),
+        ("highest confidence third", sorted_rows[bucket_size * 2 :]),
+    ]
+    for name, items in quantile_specs:
+        summary = summarize_group(name, items)
+        if items:
+            summary["confidence_range"] = [
+                round(float(items[0]["confidence"]), 4),
+                round(float(items[-1]["confidence"]), 4),
+            ]
+        quantile_summaries.append(summary)
+
+    calibration_error = 0.0
+    total = len(prediction_rows)
+    for summary in fixed_summaries:
+        if summary["count"]:
+            calibration_error += (summary["count"] / total) * abs(summary["accuracy"] - summary["avg_confidence"])
+
+    return {
+        "fixed_confidence_bins": fixed_summaries,
+        "confidence_terciles": quantile_summaries,
+        "expected_calibration_error_fixed_bins": round(calibration_error, 4),
+        "interpretation": "Confidence values are tightly clustered and low, so this model is not well calibrated; higher confidence does not reliably mean higher accuracy on the 30-example test set.",
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=3)
@@ -216,6 +290,10 @@ def main() -> None:
 
     test_accuracy, test_predictions, test_confidences = evaluate(model, test_loader, device)
     true_ids = [row["label_id"] for row in test_rows]
+    prediction_rows = [
+        summarize_prediction(row, prediction, confidence)
+        for row, prediction, confidence in zip(test_rows, test_predictions, test_confidences)
+    ]
     report = classification_report(
         true_ids,
         test_predictions,
@@ -262,6 +340,8 @@ def main() -> None:
                 "matrix": matrix,
             },
         },
+        "calibration_analysis": build_calibration(prediction_rows),
+        "all_test_predictions": prediction_rows,
         "sample_classifications": build_samples(test_rows, test_predictions, test_confidences),
     }
 

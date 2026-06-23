@@ -51,3 +51,18 @@ End by showing:
 - `results/evaluation_results.json`
 - `results/milestone6_sample_classifications.json`
 - GitHub repository URL
+
+## Optional Stretch Add-On
+
+Show the stretch interface:
+
+```bash
+python3 src/takemeter_app.py --port 8765
+```
+
+Open `http://127.0.0.1:8765`, paste a new post, and show that it returns a label, confidence score, and per-label probabilities.
+
+Mention the two analysis stretches:
+
+- Confidence calibration: all confidence scores were low and tightly clustered; the highest-confidence third did better, but the scores are not well calibrated.
+- Error pattern analysis: the official fine-tuned model over-predicted `actionable` and never predicted `underspecified`.

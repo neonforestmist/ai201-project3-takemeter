@@ -204,6 +204,83 @@ One implementation detail I handled carefully was secret management. Instead of 
 
 The required 3-5 minute demo video should show 3-5 classifications with label and confidence, one correct prediction, one incorrect prediction, and a brief walkthrough of the evaluation report. I prepared [`demo_script.md`](demo_script.md) with the exact flow and narration points to use while recording.
 
+## Stretch Features
+
+### Confidence Calibration
+
+I added a calibration analysis to [`results/milestone6_sample_classifications.json`](results/milestone6_sample_classifications.json). This analysis uses the Milestone 6 local DistilBERT rerun because the original Colab checkpoint was not committed.
+
+| Confidence Group | Count | Avg. Confidence | Accuracy |
+| --- | ---: | ---: | ---: |
+| Fixed bin `0.00-0.40` | 30 | 0.350 | 0.467 |
+| Lowest confidence third | 10 | 0.343 | 0.400 |
+| Middle confidence third | 10 | 0.350 | 0.400 |
+| Highest confidence third | 10 | 0.358 | 0.600 |
+
+The model's confidence values are tightly compressed: every test prediction landed below 0.40 confidence. The highest-confidence third was more accurate than the lower two thirds, but the difference is small and the range is narrow. I would not treat these scores as well-calibrated probabilities; they are better read as weak relative confidence signals.
+
+### Error Pattern Analysis
+
+The main systematic error is over-predicting `actionable` and failing to learn `underspecified`. In the official Colab evaluation, the fine-tuned model never predicted `underspecified`. All 9 true `underspecified` test examples were misclassified: 6 as `actionable` and 3 as `opinion_or_request`.
+
+The broader pattern is that technical-looking language pulls the model toward `actionable`, even when the post is missing enough context or is mainly a broad proposal. Across the 18 wrong predictions in the fine-tuned confusion matrix, 12 were false `actionable` predictions. This points to a feature-learning problem: DistilBERT appears to be using surface cues like API terms, product names, structured steps, and implementation vocabulary rather than reliably learning the intended discourse function.
+
+To improve this, I would add more hard negative examples where posts mention technical tools but should still be `underspecified` or `opinion_or_request`, then retrain with class weighting or a sampling strategy that forces the model to see the `underspecified` boundary more often.
+
+### Deployed Interface
+
+I added a small local browser interface in [`src/takemeter_app.py`](src/takemeter_app.py). It accepts a new post, predicts a label, and displays a confidence score plus per-label probabilities.
+
+Run it from the repo root:
+
+```bash
+python3 src/takemeter_app.py --port 8765
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8765
+```
+
+The interface trains a lightweight TF-IDF logistic regression classifier on the committed training split at startup. I used this because the full DistilBERT checkpoint is too large to commit cleanly, while the stretch rubric accepts source showing a working interface.
+
+Sample API transcript:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8765/api/classify \
+  -H 'Content-Type: application/json' \
+  -d '{"post":"The request fails only when stream=true using the Python SDK. Here is the exact 400 error and the snippet that reproduces it."}'
+```
+
+```json
+{
+  "label": "actionable",
+  "confidence": 0.431,
+  "probabilities": {
+    "actionable": 0.431,
+    "underspecified": 0.295,
+    "opinion_or_request": 0.274
+  },
+  "mode": "tfidf_logistic_regression"
+}
+```
+
+### Inter-Annotator Reliability
+
+I prepared the support files for this stretch, but I am not claiming the point yet because the rubric requires 30+ examples labeled independently by two people. I cannot truthfully invent a second human annotator.
+
+Prepared files:
+
+- [`data/inter_annotator_sample.csv`](data/inter_annotator_sample.csv): 30 validation examples with `labeler_a_label` filled and `labeler_b_label` left blank.
+- [`scripts/analyze_inter_annotator.py`](scripts/analyze_inter_annotator.py): computes percentage agreement, Cohen's kappa, label distributions, and disagreement rows after a second person fills in `labeler_b_label`.
+
+Once a second human labels the worksheet, run:
+
+```bash
+python3 scripts/analyze_inter_annotator.py
+```
+
 ## Repository Structure
 
 ```text
@@ -212,6 +289,7 @@ The required 3-5 minute demo video should show 3-5 classifications with label an
 ├── README.md
 ├── planning.md
 ├── data/
+│   ├── inter_annotator_sample.csv
 │   └── openai_developer_community_labeled.csv
 ├── notebooks/
 ├── results/
@@ -222,9 +300,12 @@ The required 3-5 minute demo video should show 3-5 classifications with label an
 │   ├── milestone5_baseline_results.json
 │   └── milestone6_sample_classifications.json
 ├── scripts/
+│   ├── analyze_inter_annotator.py
 │   ├── collect_openai_forum_dataset.py
-│   └── export_milestone6_samples.py
+│   ├── export_milestone6_samples.py
+│   └── prepare_inter_annotator_sample.py
 └── src/
+    └── takemeter_app.py
 ```
 
 ## How to Run
@@ -252,3 +333,16 @@ python3 scripts/export_milestone6_samples.py
 ```
 
 It recreates the committed split, fine-tunes `distilbert-base-uncased` with the same small-run hyperparameters, and writes [`results/milestone6_sample_classifications.json`](results/milestone6_sample_classifications.json).
+
+For the stretch interface:
+
+```bash
+python3 src/takemeter_app.py --port 8765
+```
+
+For the inter-annotator worksheet:
+
+```bash
+python3 scripts/prepare_inter_annotator_sample.py
+python3 scripts/analyze_inter_annotator.py
+```

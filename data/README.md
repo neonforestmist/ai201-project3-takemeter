@@ -3,8 +3,11 @@
 The Milestone 2 labeled dataset is:
 
 - `openai_developer_community_labeled.csv`
+- `inter_annotator_sample.csv`
 
-It contains 200 public OpenAI Developer Community examples with labels and train/validation/test splits.
+`openai_developer_community_labeled.csv` contains 200 public OpenAI Developer Community examples with labels and train/validation/test splits.
+
+`inter_annotator_sample.csv` is a 30-example validation-split worksheet for the inter-annotator reliability stretch feature. `labeler_a_label` contains the project label and `labeler_b_label` is intentionally blank until a second human annotator fills it independently.
 
 Columns:
 

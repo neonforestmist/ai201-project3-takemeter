@@ -201,3 +201,19 @@ These examples were generated with `scripts/export_milestone6_samples.py`, which
 - Short `underspecified` posts and broad `opinion_or_request` posts still need careful examples because both can lack technical details.
 - The next model iteration should test class weighting, more examples, or a longer/tuned run to help DistilBERT learn the `underspecified` boundary.
 - The repo-side Milestone 6 work is complete; the remaining external step is recording and uploading the demo video through the Course Portal.
+
+## 11. Stretch Feature Plan
+
+Stretch features selected:
+
+- Confidence calibration: use the full 30-example test prediction set from the Milestone 6 local DistilBERT rerun. Report fixed confidence bins and confidence-ranked terciles in the README.
+- Error pattern analysis: use the official Colab confusion matrix and wrong-prediction examples to identify the systematic label pair/pattern the model struggles with.
+- Deployed interface: add a small local browser interface that accepts a new post and displays predicted label, confidence, and per-label probabilities.
+- Inter-annotator reliability: prepare a 30-example worksheet and agreement script, but do not claim the point until a second human independently labels the examples.
+
+Stretch implementation notes:
+
+- Calibration showed compressed confidence. All 30 predictions were below 0.40 confidence; the highest-confidence third reached 0.600 accuracy, but the confidence range was too narrow to treat the scores as well-calibrated.
+- Error analysis showed a clear false-`actionable` pattern. In the official fine-tuned confusion matrix, the model never predicted `underspecified`, and 12 of 18 errors were false `actionable` predictions.
+- The interface in `src/takemeter_app.py` uses a lightweight TF-IDF logistic regression model trained on the committed train split at startup. This keeps the interface runnable without committing large DistilBERT weights.
+- The inter-annotator files are `data/inter_annotator_sample.csv`, `scripts/prepare_inter_annotator_sample.py`, and `scripts/analyze_inter_annotator.py`.

@@ -81,6 +81,287 @@
       ]
     }
   },
+  "calibration_analysis": {
+    "fixed_confidence_bins": [
+      {
+        "name": "0.00-0.40",
+        "count": 30,
+        "avg_confidence": 0.3504,
+        "accuracy": 0.4667,
+        "correct": 14
+      },
+      {
+        "name": "0.40-0.60",
+        "count": 0,
+        "avg_confidence": null,
+        "accuracy": null,
+        "correct": 0
+      },
+      {
+        "name": "0.60-0.80",
+        "count": 0,
+        "avg_confidence": null,
+        "accuracy": null,
+        "correct": 0
+      },
+      {
+        "name": "0.80-1.00",
+        "count": 0,
+        "avg_confidence": null,
+        "accuracy": null,
+        "correct": 0
+      }
+    ],
+    "confidence_terciles": [
+      {
+        "name": "lowest confidence third",
+        "count": 10,
+        "avg_confidence": 0.3426,
+        "accuracy": 0.4,
+        "correct": 4,
+        "confidence_range": [
+          0.3375,
+          0.3468
+        ]
+      },
+      {
+        "name": "middle confidence third",
+        "count": 10,
+        "avg_confidence": 0.3504,
+        "accuracy": 0.4,
+        "correct": 4,
+        "confidence_range": [
+          0.3488,
+          0.3528
+        ]
+      },
+      {
+        "name": "highest confidence third",
+        "count": 10,
+        "avg_confidence": 0.3581,
+        "accuracy": 0.6,
+        "correct": 6,
+        "confidence_range": [
+          0.3532,
+          0.3699
+        ]
+      }
+    ],
+    "expected_calibration_error_fixed_bins": 0.1163,
+    "interpretation": "Confidence values are tightly clustered and low, so this model is not well calibrated; higher confidence does not reliably mean higher accuracy on the 30-example test set."
+  },
+  "all_test_predictions": [
+    {
+      "id": "odc_0005",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3507,
+      "correct": true
+    },
+    {
+      "id": "odc_0009",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3488,
+      "correct": true
+    },
+    {
+      "id": "odc_0020",
+      "true_label": "opinion_or_request",
+      "predicted_label": "opinion_or_request",
+      "confidence": 0.3391,
+      "correct": true
+    },
+    {
+      "id": "odc_0021",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3577,
+      "correct": true
+    },
+    {
+      "id": "odc_0027",
+      "true_label": "underspecified",
+      "predicted_label": "actionable",
+      "confidence": 0.3496,
+      "correct": false
+    },
+    {
+      "id": "odc_0035",
+      "true_label": "opinion_or_request",
+      "predicted_label": "actionable",
+      "confidence": 0.3532,
+      "correct": false
+    },
+    {
+      "id": "odc_0039",
+      "true_label": "opinion_or_request",
+      "predicted_label": "actionable",
+      "confidence": 0.3511,
+      "correct": false
+    },
+    {
+      "id": "odc_0042",
+      "true_label": "underspecified",
+      "predicted_label": "actionable",
+      "confidence": 0.3418,
+      "correct": false
+    },
+    {
+      "id": "odc_0053",
+      "true_label": "underspecified",
+      "predicted_label": "actionable",
+      "confidence": 0.3643,
+      "correct": false
+    },
+    {
+      "id": "odc_0084",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3558,
+      "correct": true
+    },
+    {
+      "id": "odc_0085",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3547,
+      "correct": true
+    },
+    {
+      "id": "odc_0095",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3547,
+      "correct": true
+    },
+    {
+      "id": "odc_0102",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.351,
+      "correct": true
+    },
+    {
+      "id": "odc_0104",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3446,
+      "correct": true
+    },
+    {
+      "id": "odc_0107",
+      "true_label": "underspecified",
+      "predicted_label": "actionable",
+      "confidence": 0.3511,
+      "correct": false
+    },
+    {
+      "id": "odc_0111",
+      "true_label": "opinion_or_request",
+      "predicted_label": "actionable",
+      "confidence": 0.3699,
+      "correct": false
+    },
+    {
+      "id": "odc_0114",
+      "true_label": "underspecified",
+      "predicted_label": "actionable",
+      "confidence": 0.3454,
+      "correct": false
+    },
+    {
+      "id": "odc_0129",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3636,
+      "correct": true
+    },
+    {
+      "id": "odc_0160",
+      "true_label": "underspecified",
+      "predicted_label": "actionable",
+      "confidence": 0.3497,
+      "correct": false
+    },
+    {
+      "id": "odc_0161",
+      "true_label": "underspecified",
+      "predicted_label": "opinion_or_request",
+      "confidence": 0.3455,
+      "correct": false
+    },
+    {
+      "id": "odc_0165",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3375,
+      "correct": true
+    },
+    {
+      "id": "odc_0170",
+      "true_label": "underspecified",
+      "predicted_label": "actionable",
+      "confidence": 0.3468,
+      "correct": false
+    },
+    {
+      "id": "odc_0175",
+      "true_label": "opinion_or_request",
+      "predicted_label": "actionable",
+      "confidence": 0.3539,
+      "correct": false
+    },
+    {
+      "id": "odc_0177",
+      "true_label": "opinion_or_request",
+      "predicted_label": "actionable",
+      "confidence": 0.3528,
+      "correct": false
+    },
+    {
+      "id": "odc_0183",
+      "true_label": "opinion_or_request",
+      "predicted_label": "actionable",
+      "confidence": 0.3421,
+      "correct": false
+    },
+    {
+      "id": "odc_0187",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3497,
+      "correct": true
+    },
+    {
+      "id": "odc_0195",
+      "true_label": "opinion_or_request",
+      "predicted_label": "actionable",
+      "confidence": 0.3491,
+      "correct": false
+    },
+    {
+      "id": "odc_0198",
+      "true_label": "underspecified",
+      "predicted_label": "actionable",
+      "confidence": 0.3426,
+      "correct": false
+    },
+    {
+      "id": "odc_0199",
+      "true_label": "actionable",
+      "predicted_label": "actionable",
+      "confidence": 0.3534,
+      "correct": true
+    },
+    {
+      "id": "odc_0200",
+      "true_label": "opinion_or_request",
+      "predicted_label": "opinion_or_request",
+      "confidence": 0.3405,
+      "correct": true
+    }
+  ],
   "sample_classifications": [
     {
       "id": "odc_0021",
