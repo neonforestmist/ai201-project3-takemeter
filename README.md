@@ -12,7 +12,7 @@ This project studies the [OpenAI Developer Community](https://community.openai.c
 
 This community is a good fit for TakeMeter because discourse quality has practical consequences: some posts give concrete debugging context or reusable solutions, while others are too vague to act on or are mainly product opinions and feature requests. The classifier will measure the role and usefulness of a post inside a developer conversation.
 
-## Label Taxonomy
+## 📌 Label Taxonomy
 
 The classifier uses three mutually exclusive labels. The examples below are illustrative examples of the label boundaries, not final dataset rows.
 
@@ -22,7 +22,7 @@ The classifier uses three mutually exclusive labels. The examples below are illu
 | `underspecified` | Asks for help, reports a problem, or makes a technical claim but lacks enough context to evaluate or respond usefully. | "The API is not working, what do I do?" | "My fine-tune failed again and I have no idea why." |
 | `opinion_or_request` | Primarily expresses a preference, complaint, praise, product take, pricing reaction, model comparison, or feature request rather than a concrete technical question or solution. | "The new dashboard is harder to use than the old one." | "OpenAI should add better project-level usage controls." |
 
-## Data Collection
+## 📌 Data Collection
 
 Examples come from public [OpenAI Developer Community](https://community.openai.com/) forum posts and replies. The labeled dataset is in [`data/openai_developer_community_labeled.csv`](data/openai_developer_community_labeled.csv).
 
@@ -120,7 +120,7 @@ All 30 baseline responses were parseable as one of the three valid labels. The b
 
 Milestone 5 compares the Groq zero-shot baseline with the fine-tuned DistilBERT classifier on the same 30-example test split. Both models reached 0.400 accuracy, but they made different kinds of mistakes.
 
-### Metrics
+### 📌 Metrics
 
 | Model | Accuracy | Notes |
 | --- | ---: | --- |
@@ -142,7 +142,7 @@ Accuracy tied, so the fine-tuning run did not improve the headline score over th
 
 The baseline macro F1 was 0.40 and weighted F1 was 0.39. The fine-tuned model's macro F1 was 0.29 and weighted F1 was 0.32. Even though accuracy tied, the baseline had better class balance on this small test set.
 
-### Confusion Matrix
+### 📌 Confusion Matrix
 
 Rows are true labels. Columns are predicted labels.
 
@@ -162,7 +162,7 @@ Rows are true labels. Columns are predicted labels.
 | "Seems the prompt caching is broken..." | `underspecified` | `opinion_or_request` | It complains about a technical issue but lacks enough reproduction details; the model treated the complaint tone as the main signal. |
 | "I'm new to using AI for my small business..." | `opinion_or_request` | `actionable` | The post asks for practical direction, so the model over-weighted the help-seeking wording instead of the broad request style. |
 
-### Sample Classifications
+### 📌 Sample Classifications
 
 For Milestone 6, I exported five test-set examples with fine-tuned DistilBERT labels and softmax confidence scores using [`scripts/export_milestone6_samples.py`](scripts/export_milestone6_samples.py). Because the original Colab model checkpoint was not committed, this script reruns the same committed train/validation/test split and DistilBERT hyperparameters to produce the demo confidence table. The aggregate comparison above remains the official Colab evaluation result.
 
@@ -171,7 +171,7 @@ For Milestone 6, I exported five test-set examples with fine-tuned DistilBERT la
 | `odc_0021` | "As per the MCP specification for tool discovery and pagination..." | `actionable` | `actionable` | 0.358 | Correct. The post names a specific MCP pagination behavior, expected spec behavior, and observed failure. |
 | `odc_0053` | "In the blog post for gpt-realtime there are primitive examples..." | `underspecified` | `actionable` | 0.364 | Incorrect. Documentation links and dates look concrete, but the label treats the post as missing enough implementation context. |
 | `odc_0084` | "From idea to working product in a few weeks. I built an AI-native email layer..." | `actionable` | `actionable` | 0.356 | Correct. The post gives concrete product behavior, constraints, and feedback targets. |
-| `odc_0111` | "I've been experimenting with multi-step AI prompting techniques..." | `opinion_or_request` | `actionable` | 0.370 | Incorrect. The model over-weighted structured technical wording even though the post is mainly a broad method proposal. |
+| `❗️odc_0111` | "I've been experimenting with multi-step AI prompting techniques..." | `opinion_or_request` | `actionable` | 0.370 | Incorrect. The model over-weighted structured technical wording even though the post is mainly a broad method proposal. |
 | `odc_0129` | "The Future of Email Should Belong to OpenAI. Here's the blueprint..." | `actionable` | `actionable` | 0.364 | Correct under this project's rubric because the post gives a concrete product blueprint, not only a preference. |
 
 The confidence scores are all low, which matches the broader evaluation: the model is not strongly calibrated and is often uncertain even when it predicts the right label.
@@ -204,7 +204,7 @@ One implementation detail I handled carefully was secret management. Instead of 
 
 The required 3-5 minute demo video should show 3-5 classifications with label and confidence, one correct prediction, one incorrect prediction, and a brief walkthrough of the evaluation report. I prepared [`demo_script.md`](demo_script.md) with the exact flow and narration points to use while recording.
 
-## Stretch Features
+## 📌 Stretch Features
 
 ### Confidence Calibration
 
